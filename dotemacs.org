@@ -1,1 +1,1129 @@
-/home/jo/org/dotemacs.org
+* Bjonnh's .emacs
+[[elisp:org-babel-tangle]]
+[[elisp:(compile-init-file)]]
+** Loading modules :Common:
+   :PROPERTIES:
+   :ID:       4dc440ae-daab-4703-8f4a-dd50f4ddce84
+   :END:
+#+srcname: dotemacs-modules
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+(add-to-list 'load-path "~/site-lisp")
+(add-to-list 'load-path "~/.emacs.d")
+
+(setq custom-file "~/.emacs.d/jo-custom.el")
+(load custom-file)
+(setq inferior-lisp-program "/usr/bin/sbcl")
+#+end_src
+** Default init
+#+srcname: dotemacs-modules
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(load "/home/jo/.emacs.d/jo-common.el")
+(server-start)
+(require 'paren)
+#+end_src
+** Emacs parameters
+*** Interface :Common:
+    :PROPERTIES:
+    :ID:       4e71bb47-d7bc-41f3-86a4-d83d83a5d53a
+    :END:
+#+srcname: dotemacs-interface
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+(load "/home/jo/site-lisp/zenburn-theme.el")
+(setq backup-by-copying-when-mismatch t) ;; Préserve owner-perm
+(setq backup-by-copying-when-linked t) ;; Préserve liens
+(global-font-lock-mode t)
+(menu-bar-mode -99)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(show-paren-mode t)
+(setq ansi-color-for-comint-mode nil) ;; Pour le problème du shell et des mots de passe avec couleur
+
+(setq split-width-threshold nil)
+(setq redisplay-dont-pause t) ;; https://lists.gnu.org/archive/html/emacs-devel/2011-09/msg00378.html
+;; Replace selection by typed text.
+(pending-delete-mode)
+;; Make all "yes or no" prompts show "y or n" instead.
+(fset 'yes-or-no-p 'y-or-n-p)
+(setq ispell-dictionary "francais")
+;; Hide startup message
+(setq inhibit-startup-message t)
+;; Defines default titlebar of frames.
+(setq frame-title-format '(buffer-file-name "%f@emacs" "%b@emacs"))
+;; Drive out the mouse when it's too near to the cursor.
+;;(mouse-avoidance-mode 'animate)
+
+(set-face-font 'default "-unknown-Inconsolata-normal-normal-normal-*-15-*-*-*-m-0-iso10646-1")
+(setq auto-mode-alist   (append '(("\.svg"  . xml-mode)) auto-mode-alist))
+
+;; (custom-set-faces
+;;   ;; custom-set-faces was added by Custom.
+;;   ;; If you edit it by hand, you could mess it up, so be careful.
+;;   ;; Your init file should contain only one such instance.
+;;   ;; If there is more than one, they won't work right.
+;; '(rst-level-1-face ((t (:foreground "LightSkyBlue"))) t)
+;;  '(rst-level-2-face ((t (:foreground "LightGoldenrod"))) t)
+;;  '(rst-level-3-face ((t (:foreground "Cyan1"))) t)
+;;  '(rst-level-4-face ((t (:foreground "chocolate1"))) t)
+;;  '(rst-level-5-face ((t (:foreground "PaleGreen"))) t)
+;;  '(rst-level-6-face ((t (:foreground "Aquamarine"))) t)
+
+;;  '(org-ellipsis ((((class color) (background dark)) (:inherit nil :background "green" :foreground "LightGoldenrod" :underline t))))
+;;  '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
+;;  '(org-level-2 ((t (:inherit outline-2 :background "#202020" :height 1.5))))
+;;  '(org-level-3 ((t (:inherit outline-3 :background "#202040" :height 1.2))))
+;;  '(org-level-4 ((t (:inherit outline-3 :background "#303050" :height 1.1))))
+;;  '(org-level-5 ((t (:inherit outline-3 :background "#404040" :height 1.1))))
+;;  '(org-level-6 ((t (:inherit outline-3 :background "#404050" :height 1.1))))
+;;  '(org-level-7 ((t (:inherit outline-3 :background "#403030" :height 1.1))))
+;;  '(org-level-8 ((t (:inherit outline-3 :background "#402020" :height 1.1))))
+;;  '(org-level-9 ((t (:inherit outline-3 :background "#F04050" :height 1.1))))
+;;  '(org-level-10 ((t (:inherit outline-3 :background "#404050" :height 1.1))))
+;; )
+
+;;(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+;; '(rst-level-face-base-light 50))
+
+#+end_src
+*** Calendar
+Source (inutilisée car ne fonctionne pas): http://kib2.free.fr/Articles/Emacs_my_love.html
+Source actuelle: http://www.emacswiki.org/emacs-fr/PointEmacs
+#+srcname: dotemacs-calendar
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(setq european-calendar-style t)
+
+    ; la semaine commence le lundi
+    (setq calendar-week-start-day 1)
+    (setq cal-tex-holidays nil)
+    ; jours et mois en francais dans le calendrier 
+    (defvar calendar-day-abbrev-array
+      ["dim" "lun" "mar" "mer" "jeu" "ven" "sam"])
+    (defvar calendar-day-name-array
+      ["dimanche" "lundi" "mardi" "mercredi" "jeudi" "vendredi" "samedi"])
+    (defvar calendar-month-abbrev-array
+      ["jan" "fév" "mar" "avr" "mai" "jun"
+       "jul" "aou" "sep" "oct" "nov" "déc"])
+    (defvar calendar-month-name-array
+      ["janvier" "février" "mars" "avril" "mai" "juin"
+       "juillet" "aout" "septembre" "octobre" "novembre" "décembre"])
+
+#+end_src
+*** Custom set variables :Common:
+    :PROPERTIES:
+    :ID:       8b4d3811-0251-419b-a4d1-ecf1e894470d
+    :END:
+//#+srcname: dotemacs-customset
+//#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-custom.el :exports code
+//#+end_src
+*** FontLock :Common:
+    :PROPERTIES:
+    :ID:       d0c18266-bd0b-49a9-9092-4cbfe20c8fe4
+    :END:
+#+srcname: dotemacs-fontlock
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+(global-font-lock-mode 1) 
+    (setq buffer-menu-buffer-font-lock-keywords
+      '(("^....[*]Man .*Man.*"   . font-lock-variable-name-face) ;Man page
+        (".*Dired.*"             . font-lock-comment-face)       ; Dired
+        ("^....[*]shell.*"       . font-lock-preprocessor-face)  ; shell buff
+        (".*[*]scratch[*].*"     . font-lock-function-name-face) ; scratch buffer
+        ("^....[*].*"            . font-lock-string-face)        ; "*" named buffers
+        ("^..[*].*"              . font-lock-constant-face)      ; Modified
+        ("^.[%].*"               . font-lock-keyword-face)))     ; Read only
+
+    (defun buffer-menu-custom-font-lock  ()
+      (let ((font-lock-unfontify-region-function
+             (lambda (start end)
+               (remove-text-properties start end '(font-lock-face nil)))))
+        (font-lock-unfontify-buffer)
+        (set (make-local-variable 'font-lock-defaults)
+             '(buffer-menu-buffer-font-lock-keywords t))
+        (font-lock-fontify-buffer)))
+
+    (add-hook 'electric-buffer-menu-mode-hook 'buffer-menu-custom-font-lock)
+
+#+end_src
+*** Key shortcuts :Common:
+    :PROPERTIES:
+    :ID:       27e14e72-15c8-4c3b-b594-6e7674d41cd5
+    :END:
+#+srcname: dotemacs-shortcuts
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+(global-set-key "\C-Z" nil)
+
+(global-set-key "\C-w" 'backward-kill-word)
+(global-set-key "\C-x\C-k" 'kill-region)
+(global-set-key "\C-c\C-k" 'kill-region)
+
+(define-key global-map (kbd "s-<left>") 'previous-buffer)
+(define-key global-map (kbd "s-<right>") 'next-buffer)
+
+(define-key global-map (kbd "<menu>") 'dabbrev-expand)
+;;(define-key global-map (kbd "<menu>") ')
+(define-key global-map (kbd "C-<menu>") 'auto-complete-mode)
+
+(global-set-key (kbd "<XF86WebCam>") 'my-screenshot)
+(global-set-key (kbd "<XF86Calculator>") 'calc)
+(global-set-key [\s-tab] 'next-buffer)
+
+(global-set-key (kbd "s-<f3>") 'next-multiframe-window)
+(global-set-key (kbd "<f5>") 'find-file)
+(global-set-key (kbd "<f6>") 'ido-switch-buffer)
+(global-set-key (kbd "<f7>") 'org-narrow-to-subtree)
+(global-set-key (kbd "<f8>") 'widen)
+(global-set-key (kbd "<f11>") 'ibuffer)
+(global-set-key (kbd "<escape> <f4>") 'kill-buffer)
+(global-set-key (kbd "<kp-home>") 'kill-region)
+(global-set-key (kbd "<kp-up>") 'kill-ring-save)
+(global-set-key (kbd "<kp-prior>") 'yank)
+(global-set-key (kbd "<kp-left>") 'ispell-region)
+
+;;(global-set-key (kbd "<kp-begin>") 'kill-buffer)
+;;(global-set-key (kbd "<kp-right>") 'kill-buffer)
+;;(global-set-key (kbd "<kp-end>") 'kill-buffer)
+;;(global-set-key (kbd "<kp-down>") 'kill-buffer)
+;;(global-set-key (kbd "<kp-next>") 'kill-buffer)
+
+;;(global-set-key (kbd "<escape> DEL") 'keyboard-quit)
+
+;; Skeleton mode, permet d'insérer automatiquement les matching
+(setq skeleton-pair t skeleton-autowrap t)
+(define-key global-map "[" 'skeleton-pair-insert-maybe)
+
+(define-key global-map "(" 'skeleton-pair-insert-maybe)
+
+(define-key global-map "{" 'skeleton-pair-insert-maybe)
+(global-set-key "%" 'match-paren)
+
+(defun match-paren (arg)
+  "Go to the matching paren (like vi) if on a paren; otherwise insert %."
+  (interactive "p")
+  (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
+        ((looking-at "\\s\)") (forward-char 1) (backward-list 1))
+        (t (self-insert-command (or arg 1)))))
+
+(defun move-line (n)
+  "Move the current line up or down by N lines."
+  (interactive "p")
+  (setq col (current-column))
+  (beginning-of-line) (setq start (point))
+  (end-of-line) (forward-char) (setq end (point))
+  (let ((line-text (delete-and-extract-region start end)))
+    (forward-line n)
+    (insert line-text)
+    ;; restore point to original column in moved line
+    (forward-line -1)
+    (forward-char col)))
+
+(defun move-line-up (n)
+  "Move the current line up by N lines."
+  (interactive "p")
+  (move-line (if (null n) -1 (- n))))
+
+(defun move-line-down (n)
+  "Move the current line down by N lines."
+  (interactive "p")
+  (move-line (if (null n) 1 n)))
+
+(global-set-key (kbd "M-<up>") 'move-line-up)
+(global-set-key (kbd "M-<down>") 'move-line-down)
+(global-set-key (kbd "M-é") 'org-table-edit-field)
+
+#+end_src
+** Specific modules
+*** IBuffer :Common:
+    :PROPERTIES:
+    :ID:       9f0bf760-78e6-429e-865b-628bbfe96636
+    :END:
+#+srcname: dotemacs-ibuffer
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+;; Most recent on top
+;; Switching to ibuffer puts the cursor on the most recent buffer
+  (defadvice ibuffer (around ibuffer-point-to-most-recent) ()
+    "Open ibuffer with cursor pointed to most recent buffer name"
+    (let ((recent-buffer-name (buffer-name)))
+      ad-do-it
+      (ibuffer-jump-to-buffer recent-buffer-name)))
+  (ad-activate 'ibuffer)
+;; Grouping
+    (setq ibuffer-saved-filter-groups
+          (quote (("default"
+                   ("dired" (mode . dired-mode))
+                   ("perl" (mode . cperl-mode))
+                   ("erc" (mode . erc-mode))
+                   ("planner" (or
+                               (name . "^\\*Calendar\\*$")
+                               (name . "^diary$")
+                               (mode . muse-mode)))
+                   ("emacs" (or
+                             (name . "^\\*scratch\\*$")
+                             (name . "^\\*Messages\\*$")))
+                   ("gnus" (or
+                            (mode . message-mode)
+                            (mode . bbdb-mode)
+                            (mode . mail-mode) 
+                           (mode . gnus-group-mode)
+                            (mode . gnus-summary-mode)
+                            (mode . gnus-article-mode)
+                            (name . "^\\.bbdb$")
+                            (name . "^\\.newsrc-dribble")))))))
+
+    (add-hook 'ibuffer-mode-hook
+              (lambda ()
+                (ibuffer-switch-to-saved-filter-groups "default")))
+#+end_src
+*** Parenthesage :Common:
+#+srcname: dotemacs-magit
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+  (require 'autopair)
+
+  (defvar autopair-modes '(r-mode ruby-mode))
+  (defun turn-on-autopair-mode () (autopair-mode 1))
+  (dolist (mode autopair-modes) (add-hook (intern (concat (symbol-name mode) "-hook")) 'turn-on-autopair-mode))
+
+  (require 'paredit)
+  (defadvice paredit-mode (around disable-autopairs-around (arg))
+    "Disable autopairs mode if paredit-mode is turned on"
+    ad-do-it
+    (if (null ad-return-value)
+        (autopair-mode 1)
+      (autopair-mode 0)
+      ))
+
+  (ad-activate 'paredit-mode)
+(require 'highlight-parentheses nil 'noerror)
+(add-hook 'highlight-parentheses-mode-hook
+          '(lambda ()
+             (setq autopair-handle-action-fns
+                   (append
+					(if autopair-handle-action-fns
+						autopair-handle-action-fns
+					  '(autopair-default-handle-action))
+					'((lambda (action pair pos-before)
+						(hl-paren-color-update)))))))
+(define-globalized-minor-mode global-highlight-parentheses-mode
+  highlight-parentheses-mode
+  (lambda ()
+    (highlight-parentheses-mode t)))
+(global-highlight-parentheses-mode t)
+
+#+end_src
+*** LangTool 							     :Common:
+#+srcname: dotemacs-langtool
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+(require 'langtool)
+(setq langtool-language-tool-jar "/usr/share/languagetool/LanguageTool.jar")
+
+
+#+end_src
+*** Verbiste :Common:
+#+srcname: dotemacs-verbiste
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+(require 'verbiste)
+#+end_src
+*** Auto-complete :Common:
+#+srcname: dotemacs-auto-complete
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+(setq load-path (cons (expand-file-name "~/site-lisp/auto-complete") load-path))
+(require 'auto-complete)
+(ac-set-trigger-key "TAB")
+#+end_src
+*** IDO :Common:
+    :PROPERTIES:
+    :ID:       00dc5298-6c37-4657-9ab3-e7497c04c3a3
+    :END:
+#+srcname: dotemacs-ido
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+;; Interactive file/buffer select
+(require 'ido)
+(ido-mode t)
+(ido-everywhere 1)
+#+end_src
+*** EL-GET
+#+srcname: dotemacs-elget
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+
+(unless (require 'el-get nil t)
+  (url-retrieve
+   "https://raw.github.com/dimitri/el-get/master/el-get-install.el"
+ (lambda (s)
+   (let (el-get-master-branch)
+     (end-of-buffer)
+     (eval-print-last-sexp))))
+)
+(el-get 'sync)
+
+#+end_src
+*** Abbrevs
+    :PROPERTIES:
+    :ID:       02f5e459-b005-4c2f-b8ea-01949799e731
+    :END:
+#+srcname: dotemacs-abbrevs
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(require 'smart-snippet)
+(load "/home/jo/.emacs.d/jo-squeletons.el")
+(setq-default abbrev-mode t)
+(setq abbrev-file-name  "~/.abbrev_defs")
+(read-abbrev-file "~/.abbrev_defs")
+(setq save-abbrevs t)
+;;(abbrev-mode 1)
+;;(setq abbrev-mode t)
+#+end_src
+*** BBDB Addons
+#+srcname: dotemacs-bbdbadds
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(require 'sms)
+(require 'bbdb-sms)
+#+end_src
+*** Ebib
+#+srcname: dotemacs-ebib
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(require 'ebib)
+(global-set-key (kbd "<escape> e") 'ebib)
+#+end_src
+*** Magit
+    :PROPERTIES:
+    :ID:       c542b459-6b5c-45bf-a2c3-1f9e43b11e61
+    :END:
+#+srcname: dotemacs-magit
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(setq load-path (cons (expand-file-name "~/site-lisp/magit") load-path))
+(require 'magit)
+#+end_src
+*** Tex
+    :PROPERTIES:
+    :ID:       72540926-aba6-4da9-bc09-76aeaeeedb98
+    :END:
+#+srcname: dotemacs-tex
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(load "auctex.el" nil t t)
+
+;;(load "preview-latex.el" nil t t)
+(setq tex-dvi-view-command "/home/jo/bin/latex-view.sh '*'")
+#+end_src
+*** GPG
+    :PROPERTIES:
+    :ID:       ed875c92-d117-438d-81ed-4b599823e96e
+    :END:
+#+srcname: dotemacs-gpg
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+;; Mode pour GPG
+(require 'epa)
+(epa-file-enable)
+#+end_src
+*** Dired 
+    :PROPERTIES:
+    :ID:       c9463424-fb25-40cb-8f8e-ddcc822a117b
+    :END:
+#+srcname: dotemacs-dired
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(require 'dired)
+(defvar dired-sort-map (make-sparse-keymap))
+
+(define-key dired-mode-map "s" dired-sort-map)
+
+(define-key dired-sort-map "s" (lambda () "sort by Size" (interactive) (dired-sort-other (concat dired-listing-switches "S"))))
+(define-key dired-sort-map "x" (lambda () "sort by eXtension" (interactive) (dired-sort-other (concat dired-listing-switches "X"))))
+(define-key dired-sort-map "t" (lambda () "sort by Time" (interactive) (dired-sort-other (concat dired-listing-switches "t"))))
+(define-key dired-sort-map "n" (lambda () "sort by Name" (interactive) (dired-sort-other dired-listing-switches)))
+(define-key dired-sort-map "d" (lambda () "sort by name grouping Dirs" (interactive) (dired-sort-other (concat dired-listing-switches " --group-directories-first"))))
+;; )))
+
+(provide 'dired-sort-map)
+
+#+end_src
+*** OrgMode
+#+srcname: dotemacs-orgmode-paths-and-load
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(require 'jo-org-general)
+(require 'jo-org-publish)
+#+end_src
+**** Paths and load
+     :PROPERTIES:
+     :ID:       2e46fcb7-e9b1-4104-ab41-54e1dc831552
+     :END:
+#+srcname: dotemacs-orgmode-paths-and-load
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-org-general.el   :exports code
+(setq load-path (cons (expand-file-name "~/site-lisp/org") load-path))
+(setq load-path (cons (expand-file-name "~/site-lisp/org/lisp") load-path))
+(setq load-path (cons (expand-file-name "~/site-lisp/org/contrib/lisp") load-path))
+;;(load "/home/jo/site-lisp/org/lisp/org-install.el")
+(load "/home/jo/.emacs_publish")
+(require 'org-install)
+(require 'org-timer)
+(require 'org-htmlslidy)
+(require 'org-collector)
+(require 'org-compat)
+(require 'org-html)
+(require 'htmlize)
+
+(provide 'jo-org-general)
+#+end_src
+
+**** Parameters
+     :PROPERTIES:
+     :ID:       47b3b8c7-8a96-4be4-863a-908c9203ba0f
+     :END:
+#+srcname: dotemacs-orgmode-parameters
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(setq org-hide-leading-stars t)
+(setq bidi-paragraph-direction 'left-to-right)
+(setq bidi-display-reordering nil)
+;; Put new buffers in org mode.
+(setq default-major-mode 'org-mode)
+(setq org-log-done 'time)
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(setq org-return-follows-link t)
+(setq org-completion-use-ido t)
+    (setq org-todo-keywords
+       '((sequence "STARTED" "PROJECT" "NEXT" "TODO" "TOPROCESS" "DELAYED" "WAITING" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED" "CANCELED")))
+     (setq org-todo-keyword-faces
+           '(("TODO" . "red") ("STARTED" . "yellow") ("PROJECT" . "green") ("TOPROCESS" . "red") ("VERIFY" . "red")
+             ("CANCELED" . (:foreground "blue" :weight bold))
+ ("DELEGATED" . (:foreground "blue" :weight bold))
+("DONE" . (:foreground "green" :weight bold :background "red"))
+))
+
+  (setq org-stuck-projects
+           '("+PROJECT/-DONE" ("NEXT" "TODO") ("\\<IGNORE\\>")))
+
+
+(add-hook 'org-mode-hook (lambda () (setq truncate-lines nil)))
+
+(setq org-agenda-custom-commands
+'(("o" "Thèse année 2" tags-todo "Année2"))
+)
+
+
+
+(setq org-agenda-custom-commands
+      '(("w" "Things to be done"
+         ((org-agenda-list nil nil 1)
+          (tags "WORK")
+          (tags "HOME")
+          (tags-todo "WAITING")
+          ))))
+
+(setq org-beamer-environments-extra '("only" "o" "\\only%a{%h%x" "}"))
+(add-to-list 'org-beamer-environments-extra '("only-block" "o" "\\only%a{\\begin{block}{%h}%x" "\\end{block}}"))
+
+
+#+end_src
+***** Faces
+      :PROPERTIES:
+      :ID:       cc033c02-841c-40fd-a5a8-1cbb923030d6
+      :END:
+#+srcname: dotemacs-orgmode-parameters-faces
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+
+(setq org-src-fontify-natively t)
+(defcustom org-cycle-level-faces t
+  "If non-nil, level styles cycle after level org-n-level-faces, so level org-n-level-faces+1 is styled like level 1. If nil, then all levels >=org-n-level-faces are styled like level org-n-level-faces"
+  :group 'org-appearance
+  :type 'boolean)
+
+(defun org-get-level-face (n)
+  "Get the right face for match N in font-lock matching of headlines."
+  (setq org-l (- (match-end 2) (match-beginning 1) 1))
+  (if org-odd-levels-only (setq org-l (1+ (/ org-l 2))))
+  (if org-cycle-level-faces
+  (setq org-f (nth (% (1- org-l) org-n-level-faces) org-level-faces))
+  (setq org-f (nth (1- (if (< org-l org-n-level-faces) org-l org-n-level-faces)) org-level-faces))
+  )
+  (cond
+   ((eq n 1) (if org-hide-leading-stars 'org-hide org-f))
+   ((eq n 2) org-f)
+   (t (if org-level-color-stars-only nil org-f))))
+
+
+(setq org-cycle-level-faces nil)
+
+
+#+end_src
+**** Zotero integration
+     :PROPERTIES:
+     :ID:       564edc6f-d0dd-4eb6-bf3c-40d06edb188d
+     :END:
+#+srcname: dotemacs-orgmode-paths-and-load
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(defun bjonnh/zot-select (url &rest ignore)
+"select on current 'zotero://select//HASH' using firefox"
+(interactive)
+(message url)
+(save-excursion
+(shell-command (concat "firefox zotero:\"" url "\""))))
+
+;;  (let (zot-select js url)
+;;    (re-search-backward " \\|^")
+;;    (message url)
+;;    (if (re-search-forward "\\(zotero:\\/\\/select\\/\\/[[:alnum:]]\\)" (line-end-position) t)
+;;	(progn
+;;	  (setq zot-select (match-string-no-properties 1))
+	  ;; (message zot-select)
+;;	  (shell-command (concat "firefox \"" zot-select "\"")))
+ ;;     (message "no match")))))
+
+(org-add-link-type "zotero" 'bjonnh/zot-select)
+
+#+end_src
+**** Pomodoro
+     :PROPERTIES:
+     :ID:       ac268640-38b3-40ff-9f8f-3d64a5c63498
+     :END:
+#+srcname: dotemacs-orgmode-pomodoro
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+;; Pomodoro style timer
+
+(setq org-timer-default-timer 40)
+(add-hook 'org-clock-in-hook '(lambda () 
+  (if (not org-timer-current-timer) 
+	      (org-timer-set-timer (read (if (org-entry-get nil "timer_task") (org-entry-get nil "timer_task") '"20")))
+	  )
+  )
+  
+)
+(add-hook 'org-clock-out-hook '(lambda () 
+      (setq org-mode-line-string nil)
+(org-timer-cancel-timer)))
+
+(add-hook 'org-timer-done-hook '(lambda() (start-process "orgmode" nil "/usr/share/icons/gnome/scalable/emblems/emblem-important-symbolic.svg" "-u" "low" "Il est temps de faire une pause")))
+
+#+end_src
+**** Babel
+     :PROPERTIES:
+     :ID:       297d0efc-7725-451b-9c7f-0a4f6aded038
+     :END:
+#+srcname: dotemacs-orgmode-babel
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+;;(require 'org-babel-init)
+(setq load-path (cons (expand-file-name "~/site-lisp/ess/lisp") load-path))
+(require 'ess-site)
+    (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((emacs-lisp . t)
+        (R . t)
+	(python .t)))
+
+;;(org-babel-load-library-of-babel)
+#+end_src
+**** Publish
+     :PROPERTIES:
+     :ID:       03ad97ef-681f-42d8-9246-0e41cadc787c
+     :END:
+#+srcname: dotemacs-orgmode-publish
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-org-publish.el :exports code
+(setq load-path (cons (expand-file-name "~/.emacs.d") load-path))  
+(require 'jo-org-general)
+(require 'org-publish)
+(require 'org-special-blocks)
+(defun bjonnh-publish (plist filename pub-dir)
+ "Publish my website including blog functions"
+(message filename)
+(org-publish-org-to-html plist filename pub-dir)
+)
+
+(defun bjonnh-sitemap (project &optional sitemap-filename)
+  "Create a sitemap of pages in set defined by PROJECT.
+Optionally set the filename of the sitemap with SITEMAP-FILENAME.
+Default for SITEMAP-FILENAME is 'sitemap.org'."
+  (let* ((project-plist (cdr project))
+	 (dir (file-name-as-directory
+	       (plist-get project-plist :base-directory)))
+	 (localdir (file-name-directory dir))
+	 (indent-str (make-string 2 ?\ ))
+	 (exclude-regexp (plist-get project-plist :exclude))
+	 (files (nreverse (org-publish-get-base-files project exclude-regexp)))
+	 (sitemap-filename (concat dir (or sitemap-filename "sitemap.org")))
+	 (sitemap-title (or (plist-get project-plist :sitemap-title)
+			  (concat "Sitemap for project " (car project))))
+	 (sitemap-style (or (plist-get project-plist :sitemap-style)
+			  'tree))
+	 (visiting (find-buffer-visiting sitemap-filename))
+	 (ifn (file-name-nondirectory sitemap-filename))
+	 file sitemap-buffer)
+    (with-current-buffer (setq sitemap-buffer
+			       (or visiting (find-file sitemap-filename)))
+      (erase-buffer)
+      (insert (concat "#+TITLE: " sitemap-title "\n"))
+(insert "#+begin_menu\n")
+(insert "[[file:index.org][Index]] | ")
+      (while (setq file (pop files))
+	(let ((fn (file-name-nondirectory file))
+	      (link (file-relative-name file dir))
+	      (oldlocal localdir))
+	  ;; sitemap shouldn't list itself
+	  (unless (equal (file-truename sitemap-filename)
+			 (file-truename file))
+	    (unless (equal "index.org" (file-name-nondirectory file))
+	    (if (eq sitemap-style 'list)
+	      (message "Generating tree-style sitemap for %s" sitemap-title)
+	      (setq localdir (concat (file-name-as-directory dir)
+				     (file-name-directory link)))
+	      (unless (string= localdir oldlocal)
+		(if (string= localdir dir)
+		    (setq indent-str (make-string 2 ?\ )) 
+		  (let ((subdirs
+			 (split-string
+			  (directory-file-name
+			   (file-name-directory
+			    (file-relative-name localdir dir))) "/"))
+			(subdir "")
+			(old-subdirs (split-string
+				      (file-relative-name oldlocal dir) "/")))
+		    (setq indent-str (make-string 2 ?\ ))
+		    (while (string= (car old-subdirs) (car subdirs))
+		      (setq indent-str (concat indent-str (make-string 2 ?\ )))
+		      (pop old-subdirs)
+		      (pop subdirs))
+		    (dolist (d subdirs)
+		      (setq subdir (concat subdir d "/"))
+		      (insert (concat indent-str "[[file:" d "/index.org][" d "]] | "))
+		      (setq indent-str (make-string
+					(+ (length indent-str) 2) ?\ )))
+)
+)))
+	    ;; This is common to 'flat and 'tree
+	    (insert (concat indent-str "[[file:" link "]["
+			    (org-publish-find-title file)
+			    "]] | "))))))
+(insert "\n#+end_menu\n")
+      (save-buffer))
+    (or visiting (kill-buffer sitemap-buffer))))
+
+
+(setq org-publish-project-alist
+      '(
+("site-html"
+ :base-directory "~/Bjonnh.net/site"
+ :base-extension "org"
+ :publishing-directory "~/Bjonnh.net/export/"
+ :exclude "skel"
+ :recursive t
+ :auto-preamble t
+ :auto-postamble nil
+ :html-preamble "<div id=\"title\">%t</div><div id=\"logo\">&nbsp;</div>"
+ :html-postamble "<hr />
+Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Jonathan BISSON<br/>
+
+Tous les textes, documents et photos présents sur ce site le sont sous la licence :
+<a href=\"http://creativecommons.org/licenses/by-nd/3.0/\">Creative Commons Attribution-NoDerivs 3.0 Unported</a><br/>
+
+Les programmes et bouts de code sont distribués sous la licence <a href=\"http://www.gnu.org/licenses/licenses.html#GPL\">GPL</a> V3.0 (ou supérieure) à moins que cela soit indiqué différement.<br/>
+"
+ :creator-info nil
+ :author-info nil
+ :link-up nil
+ :language "fr"
+ :headline-levels 2
+ :section-numbers nil
+ :link-home nil
+ :style-include-default nil
+ :style "<link rel=\"stylesheet\" type=\"text/css\" href=\"bjonnh.css\" />"
+ :style-include-scripts nil
+ :auto-sitemap t
+ :drawers t
+ :tags t
+ :timestamps t
+ :sitemap-function bjonnh-sitemap
+ :preserve-breaks nil
+ :publishing-function bjonnh-publish
+ )
+
+("org-static"
+ :base-directory "~/Bjonnh.net/skel"
+ :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+ :publishing-directory "~/Bjonnh.net/export"
+ :exclude "export"
+ :recursive t
+ :publishing-function org-publish-attachment
+ )
+
+("site" :components ("site-html"))
+      ))
+
+(provide 'jo-org-publish)
+#+end_src
+**** Crypt
+     :PROPERTIES:
+     :ID:       f4665c58-de82-4b5f-80f5-926fc762a600
+     :END:
+#+srcname: dotemacs-orgmode-crypt
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(require 'org-crypt) 
+(org-crypt-use-before-save-magic)
+(setq org-tags-exclude-from-inheritance (quote ("crypt")))
+(setq auto-save-default nil)
+(setq org-crypt-key "83D26992") ;; bissonjonathan@gmail.com (pub 2048D)
+(global-set-key "\C-cd" 'org-decrypt-entry)
+(global-set-key "\C-ce" 'org-encrypt-entry)
+
+#+end_src
+**** Remember
+     :PROPERTIES:
+     :ID:       23001335-04b0-48d2-8cc7-70a5aebbc577
+     :END:
+#+srcname: dotemacs-orgmode-remember
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+  ;; Remember
+  
+  ;;; remember and org-mode
+  (org-remember-insinuate)
+  (setq org-default-notes-file "~/org/notes")
+  (setq remember-annotation-functions '(org-remember-annotation))
+  (setq remember-handler-functions '(org-remember-handler))
+  (add-hook 'remember-mode-hook 'org-remember-apply-template)
+  ;; templates for remember
+  (setq org-remember-templates
+        '(
+          ("A faire" ?1 "* TODO %?\n  %x %i" "~/org/notes/TODO.org" "Taches")
+          ("Apprendre" ?2 "* TODO %?\n %x %i" "~/org/notes/TODO.org" "A Apprendre")
+          ("A trouver" ?3 "* TODO %?\n %x %i" "~/org/notes/atrouver.org" "A trouver")
+          ("Fourtou" ?4 "* %u %?\n %x %i" "~/org/notes/fourtou.org")
+          ("Notes" ?5 "* %u %^{Title} %^g\n %i%?\n %x %a" "~/org/notes/notes.org"
+           "Notes diverses")
+          ("Agenda Express" ?A "* %u %^{Title} %^g\n %i%?\n %a" "~/org/notes/agenda_express.org"
+           "Agenda express")
+          ("Work" ?7 "* %^{Title}\n  %i%?\n %x  %a" "~/Documents/These/notes.org")))
+  
+  
+#+end_src
+**** Agenda
+     :PROPERTIES:
+     :ID:       144b16bc-341b-46a1-afad-4edb0ed8a70a
+     :END:
+#+srcname: dotemacs-orgmode-agenda
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+  (setq org-tags-exclude-from-inheritance '("Meutes" "Individus" "Populations"))
+    (setq org-agenda-custom-commands
+              '(("X" agenda "" nil ("/home/jo/agenda.html"))
+              ("O" ((agenda "" ((org-agenda-ndays 1)))
+                 (tags "+Individus")
+                 (tags "Meutes")
+                 (tags "Populations+Planifié")
+                 (tags "Populations+Nonplanifié")
+                 (tags "Populations-Planifié-Nonplanifié"))
+                 ((org-agenda-compact-blocks t)))
+  ))
+#+end_src
+**** RefTex
+     :PROPERTIES:
+     :ID:       ce5fad8a-4bf0-4359-996b-89bac9299240
+     :END:
+#+srcname: dotemacs-orgmode-reftex
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+;; Using bibliography in org-mode
+(defun org-mode-reftex-setup ()
+(load-library "reftex")
+(and (buffer-file-name)
+(file-exists-p (buffer-file-name))
+(reftex-parse-all))
+(define-key org-mode-map (kbd "C-c )") 'reftex-citation)
+)
+(add-hook 'org-mode-hook 'org-mode-reftex-setup)
+;; (setq org-latex-to-pdf-process '("pdflatex -interaction nonstopmode -output-directory %o %f"  "bibtex %b" "pdflatex -interaction nonstopmode -output-directory %o %f" "makeindex filename.nlo  -s nomencl.ist -o filename.nls" "pdflatex -interaction nonstopmode -output-directory %o %f"))
+(setq org-latex-to-pdf-process '("/home/jo/bin/pdflatexer.sh %f"))
+
+
+(defun my-rtcite-export-handler (path desc format)
+  (message "my-rtcite-export-handler is called : path = %s, desc = %s, format = %s" path desc format)
+  (let* ((search (when (string-match "::#?\\(.+\\)\\'" path)
+                   (match-string 1 path)))
+         (path (substring path 0 (match-beginning 0))))
+    (cond ((eq format 'latex)
+           (if (or (not desc)
+                   (equal 0 (search "rtcite:" desc)))
+               (format "\\cite{%s}" search)
+             (format "\\cite[%s]{%s}" desc search))))))
+
+(org-add-link-type "rtcite"
+                   'org-bibtex-open
+                   'my-rtcite-export-handler)
+
+#+end_src
+**** Keymap
+     :PROPERTIES:
+     :ID:       98cbb4e9-d74e-4403-9e3c-ae93839418a0
+     :END:
+#+srcname: dotemacs-orgmode-keymode
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+;; Keymaps
+(define-key global-map "\C-cn" 'org-table-edit-field)
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(define-key global-map "\C-co" 'org-mode)
+(define-key global-map "\C-cb" 'org-iswitchb)
+
+(define-key global-map (kbd "s-<kp-up>") 'outline-previous-visible-heading)
+(define-key global-map (kbd "s-<kp-down>") 'outline-next-visible-heading)
+(define-key global-map (kbd "s-<kp-prior>") 'org-backward-same-level)
+(define-key global-map (kbd "s-<kp-next>") 'org-forward-same-level)
+
+ (define-key global-map (kbd "<f9>")
+	      '(lambda () (interactive) (when (eq major-mode 'org-mode)
+	      (org-insert-time-stamp nil t t) (insert "\n"))))
+(define-key global-map "\C-cr" 'org-remember)
+#+end_src
+**** Fstree
+#+srcname: dotemacs-fstree
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+
+(add-to-list 'load-path "~/site-lisp/org-fstree")
+(require 'org-fstree)
+
+(add-to-list 'load-path "~/site-lisp/bookmark+")
+(require 'bookmark+)
+
+(require 'dired+)
+#+end_src
+*** Googlemaps
+#+srcname: dotemacs-googlemaps
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+
+(setq load-path (cons (expand-file-name "~/site-lisp/google-maps") load-path))
+(require 'google-maps)
+(require 'org-location-google-maps) ;; C-c M-L store a location in orgmode , C-c M-l show the map 
+#+end_src
+*** Sauron :Common:
+#+srcname: dotemacs-sauron
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+
+(add-to-list 'load-path "~/site-lisp/sauron")
+(require 'sauron)
+(setq
+  sauron-max-line-length 120 
+  
+  ;; you probably want to add your own nickname to the these patterns
+  sauron-watch-patterns
+  '("bjonnh")
+
+  ;; you probably want to add you own nick here as well
+  sauron-watch-nicks
+  '("bjonnh"))
+
+#+end_src
+*** SudoEdit :NotWorking:
+#+srcname: dotemacs-sudoedit
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+
+#+end_src
+*** Multi-term :Disabled:
+#+srcname: dotemacs-multiterm
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+;;(autoload 'multi-term "multi-term" nil t)
+;;(autoload 'multi-term-next "multi-term" nil t)
+
+;;(setq multi-term-program "/bin/bash")   ;; use bash
+;; (setq multi-term-program "/bin/zsh") ;; or use zsh...
+
+;; only needed if you use autopair
+;;(add-hook 'term-mode-hook
+;;  #'(lambda () (setq autopair-dont-activate t)))
+
+
+;;(global-set-key (kbd "C-c t") 'multi-term-next)
+;;(global-set-key (kbd "C-c T") 'multi-term) ;; create a new one
+#+end_src
+*** Workgroups :Common::Disabled:
+#+srcname: dotemacs-common-workgroups
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+;;(add-to-list 'load-path "~/site-lisp/workgroups")
+;;(require 'workgroups)
+;;(setq wg-prefix-key (kbd "C-c w"))
+;;(workgroups-mode 1)
+;;(wg-load "/home/jo/.emacs.d/workgroups.dat")
+#+end_src
+*** Newsticker :Disabled:
+    :PROPERTIES:
+    :ID:       a25f3983-9f31-433a-873a-f7a5c7048cfd
+    :END:
+#+srcname: dotemacs-newsticker
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+  ;;(newsticker-start)
+#+end_src
+*** PredictiveMode :Disabled:
+    :PROPERTIES:
+    :ID:       0933e927-f5b4-4fc0-b8e8-4e3aeee52463
+    :END:
+#+srcname: dotemacs-predictive
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+;;(setq load-path (cons (expand-file-name "~/site-lisp/predictive") load-path))
+
+;;(autoload 'predictive-mode "predictive" "predictive" t)
+;;(set-default 'predictive-auto-add-to-dict t)
+;;(setq predictive-main-dict 'bjonnh
+;;      predictive-auto-learn t
+;;      predictive-add-to-dict-ask nil
+;;      predictive-use-auto-learn-cache nil
+;;      predictive-which-dict nil)
+#+end_src
+*** Zotexo - Zotero :Disabled:
+#+srcname: dotemacs-zotexo
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+
+;(add-to-list 'load-path "~/site-lisp/zotexo-read-only")
+;(require 'zotexo)
+;(add-hook 'LaTeX-mode-hook 'zotexo-minor-mode)
+
+
+;(add-to-list 'load-path "~/site-lisp/zotero-plain/elisp")
+;(autoload 'org-zotero-mode "org-zotero" "" t)
+
+#+end_src
+*** ERC 							 :StandAlone::Disabled:
+    :PROPERTIES:
+    :ID:       b7b58684-4d6c-49ab-906d-d098dbd9a91b
+    :END:
+-#+srcname: dotemacs-erc
+-#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-erc.el :exports code
+#   ;; ERC
+#   (load "/home/jo/.emacs.d/jo-common.el")    
+#   (require 'erc)
+#   (require 'tls)
+#   ;; (setq tls-program '("gnutls-cli --priority SECURE256 -p %p --x509cafile /home/jo/.private/certs/GandiStandardSSLCA.pem %h"))
+#   (require 'erc-join)
+#   (erc-autojoin-mode 1)
+#   (setq erc-autojoin-channels-alist
+#         '(("freenode.net" "#labx" "#org-mode" "#lisp" "#emacs")
+# ("twice-irc.de" "#i3")
+#           ))
+#   (require 'erc-services)
+#   (erc-services-mode 1)
+  
+#   (setq erc-prompt-for-nickserv-password nil)
+  
+#   (setq erc-nickserv-passwords
+#         `((freenode     (("bjonnh" . ,freenode-bjonnh-pass)
+#                          ))
+#           ))
+  
+  
+#   (require 'erc-fill)
+#   (erc-fill-mode t)
+  
+#   (require 'erc-ring)
+#   (erc-ring-mode t)
+  
+#   (require 'erc-netsplit)
+#   (erc-netsplit-mode t)
+  
+#   (erc-timestamp-mode t)
+#   (setq erc-timestamp-format "[%R-%m/%d]")
+  
+#   (erc-button-mode nil) ;slow
+  
+#   (setq erc-user-full-name "Bjonnh")
+#   (setq erc-email-userid "bjonnh@somewhere.net")
+#  (defun irc-i3 ()
+#     "Connect to IRC."
+#     (interactive)
+#     (erc-tls :server "irc.twice-irc.de" :port 7000
+#              :nick "bjonnh" :full-name "Bjonnh")
+#     )
+#   (defun irc-maybe ()
+#     "Connect to IRC."
+#     (interactive)
+#     (erc-tls :server "irc.freenode.net" :port 7000
+#              :nick "bjonnh" :full-name "Bjonnh")
+#     )
+# (irc-maybe)
+-#+end_src
+** Functions
+*** TrivialMode :Common:
+    :PROPERTIES:
+    :ID:       18d8a4c8-129f-45c0-b6dc-e47cda613dab
+    :END:
+#+srcname: dotemacs-trivial
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+; Opening other kinds of files
+; http://www.emacswiki.org/cgi-bin/wiki/TrivialMode
+; by Cyprian Laskowski
+; Modified to make buffer read only and to suppress output of command
+;(defun define-trivial-mode(mode-prefix file-regexp &optional command)
+;  (or command (setq command mode-prefix))
+;  (let ((mode-command (intern (concat mode-prefix "-mode"))))
+;    (fset mode-command
+;          `(lambda ()
+;             (interactive)
+;             (toggle-read-only t)
+;             (start-process ,mode-prefix nil
+;                            ,command (buffer-file-name))
+;             (kill-buffer (current-buffer))))
+;    (add-to-list 'auto-mode-alist (cons file-regexp mode-command)))
+;  )
+; (defun define-trivial-mode(mode-prefix file-regexp &optional command)
+;   (or command (setq command mode-prefix))
+;   (let ((mode-command (intern (concat mode-prefix "-mode"))))
+;     (fset mode-command
+;           `(lambda ()
+;              (interactive)
+;              (toggle-read-only t)
+; 	     (start-process ,mode-prefix nil
+; 			    ,command (buffer-file-name))
+; 	     (let ((obuf (other-buffer (current-buffer) t)) ;; Select correct buffer
+; 		   (kbuf (current-buffer)))
+; 	       (set-buffer obuf)			    ;; set it as current
+; 	       (kill-buffer kbuf))))			    ;; kill temporary buffer
+;     (add-to-list 'auto-mode-alist (cons file-regexp mode-command))))
+; (define-trivial-mode "gv" "\\.ps$")
+; (define-trivial-mode "okular" "\\.pdf$") 
+; (define-trivial-mode "/home/jo/bin/eogw" "\\.png$") 
+(require 'openwith)
+(setq openwith-associations '(("\\.pdf\\'" "okular" (file)) ("\\.png\\'" "/home/jo/bin/eogw" (file))))
+(openwith-mode t)
+#+end_src
+*** My screenshot :Common:
+    :PROPERTIES:
+    :ID:       4a8b30cb-ec6b-4a97-abfe-916e5f7339d4
+    :END:
+#+srcname: dotemacs-startup
+#+begin_src emacs-lisp :tangle /home/jo/.emacs.d/jo-common.el :exports code
+;; TODO: Clean contat, check if org-screenshot-prefixdir exists
+ (defun my-screenshot ()
+(interactive)
+;;(setq filename (concat (make-temp-name (file-name-directory (buffer-file-name)))  ".jpg" ))
+(setq org-screenshot-prefixdir "z_Images/")
+(setq org-screenshot-filename (concat (make-temp-name (concat (file-name-directory
+	 buffer-file-name) org-screenshot-prefixdir (file-name-nondirectory
+	 buffer-file-name) "-")) ".jpg"))
+(make-directory (file-name-directory org-screenshot-filename) t)
+(call-process "import" nil nil nil org-screenshot-filename)
+(insert (concat "[[" org-screenshot-filename "]]"))
+(org-display-inline-images)
+)
+
+#+end_src
+*** Autocompile on save
+    :PROPERTIES:
+    :ID:       ad0748ca-1c43-43f7-8ff8-d0f405d401ae
+    :END:
+#+srcname: dotemacs-autocompile
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+;; Autocompile my .emacs on save
+
+(defun compile-init-file ()
+  (let ((byte-compile-warnings '(unresolved)))
+    (byte-compile-file user-init-file)
+    (message "Emacs init file saved and compiled.")))
+(defun my-emacs-lisp-mode-hook ()
+; rajouter ici le code souhaité, par exemple : (turn-on-eldoc-mode)
+
+  (if (string-equal buffer-file-name (expand-file-name user-init-file))
+      (progn (add-hook 'after-save-hook 'compile-init-file t t)
+    	     )))
+(add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
+#+end_src
+** Startup
+   :PROPERTIES:
+   :ID:       a9fd0648-e744-4bec-879c-c8313c60bc54
+   :END:
+#+srcname: dotemacs-startup
+#+begin_src emacs-lisp :tangle /home/jo/.emacs :exports code
+(find-file "/home/jo/org/main.org")
+;;(org-agenda-list '(org-agenda-start-on-weekday))
+#+end_src
+   
+   
